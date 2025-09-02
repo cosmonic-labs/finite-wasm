@@ -252,7 +252,10 @@ impl Fee {
     };
 
     pub fn constant(constant: u64) -> Self {
-        Self { constant, linear: 0 }
+        Self {
+            constant,
+            linear: 0,
+        }
     }
 
     pub(crate) fn checked_add(self, other: Fee) -> Option<Self> {
@@ -319,8 +322,14 @@ impl AnalysisOutcome {
     /// keep track of the current total stack height and raise a trap if the stack limit is
     /// exceeded.
     #[cfg(feature = "instrument")]
-    pub fn instrument(&self, import_env: &str, wasm: &[u8]) -> Result<Vec<u8>, InstrumentError> {
-        instrument::InstrumentContext::new(wasm, import_env, self).run()
+    pub fn instrument(
+        &self,
+        import_env: &str,
+        wasm: &[u8],
+        op_cost: u32,
+        max_stack_height: u32,
+    ) -> Result<Vec<u8>, InstrumentError> {
+        instrument::InstrumentContext::new(wasm, import_env, self, op_cost, max_stack_height).run()
     }
 }
 

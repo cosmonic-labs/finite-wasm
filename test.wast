@@ -10,7 +10,7 @@
 
   (global $gas (export "finite_wasm_remaining_gas") (mut i64) (i64.const 0))
 
-  ;; this will be hard-coded, exported just for testing
+  ;; intial value of this will be hard-coded, exported just for testing
   (global $stack (export "finite_wasm_remaining_stack") (mut i64) (i64.const 0))
 
   ;; this will be hard-coded, exported mutable just for testing
@@ -28,12 +28,10 @@
     i64.sub128
     i64.popcnt
     i32.wrap_i64
-    (if
-      (then
+    if
         call $finite_wasm_gas_exhausted
         unreachable
-      )
-    )
+    end
     ;; $gas - $n
 
     global.set $gas
@@ -51,12 +49,10 @@
     i64.sub128
     i64.popcnt
     i32.wrap_i64
-    (if
-      (then
+    if
         call $finite_wasm_stack_exhausted
         unreachable
-      )
-    )
+    end
     ;; $stack - $operand_size
 
     i64.const 0
@@ -67,12 +63,10 @@
     i64.sub128
     i64.popcnt
     i32.wrap_i64
-    (if
-      (then
+    if
         call $finite_wasm_stack_exhausted
         unreachable
-      )
-    )
+    end
     ;; $stack - $operand_size - $frame_size
 
     global.set $stack
@@ -88,12 +82,10 @@
     i64.mul_wide_u
     i64.popcnt
     i32.wrap_i64
-    (if
-      (then
+    if
         call $finite_wasm_gas_exhausted
         unreachable
-      )
-    )
+    end
     ;; $gas | 0 | $frame_size * $op_cost
 
     i64.const 0
@@ -102,12 +94,10 @@
     i64.sub128
     i64.popcnt
     i32.wrap_i64
-    (if
-      (then
+    if
         call $finite_wasm_gas_exhausted
         unreachable
-      )
-    )
+    end
     ;; $gas - $frame_size * $op_cost
     global.set $gas
 
@@ -118,8 +108,7 @@
     i64.rem_u
     i32.wrap_i64
     ;; $frame_size % 8
-    (if
-      (then
+    if
         global.get $gas
         i64.const 0
         local.get $frame_size
@@ -129,15 +118,12 @@
         i64.sub128
         i64.popcnt
         i32.wrap_i64
-        (if
-          (then
+        if
             call $finite_wasm_gas_exhausted
             unreachable
-          )
-        )
+        end
         global.set $gas
-      )
-    )
+    end
   )
 
   (func (export "finite_wasm_unstack") (param $operand_size i64) (param $frame_size i64)
@@ -152,11 +138,9 @@
     i64.add128
     i64.popcnt
     i32.wrap_i64
-    (if
-      (then
+    if
         unreachable
-      )
-    )
+    end
     ;; $stack + $operand_size
 
     i64.const 0
@@ -167,11 +151,9 @@
     i64.add128
     i64.popcnt
     i32.wrap_i64
-    (if
-      (then
+    if
         unreachable
-      )
-    )
+    end
     ;; $stack + $operand_size + $frame_size
 
     global.set $stack
@@ -188,12 +170,10 @@
     i64.mul_wide_u
     i64.popcnt
     i32.wrap_i64
-    (if
-      (then
+    if
         call $finite_wasm_gas_exhausted
         unreachable
-      )
-    )
+    end
     ;; $gas | 0 | $count * $linear
 
     i64.const 0
@@ -204,12 +184,10 @@
     i64.add128
     i64.popcnt
     i32.wrap_i64
-    (if
-      (then
+    if
         call $finite_wasm_gas_exhausted
         unreachable
-      )
-    )
+    end
     ;; $gas | 0 | $count * $linear + $constant
 
     i64.const 0
@@ -218,12 +196,10 @@
     i64.sub128
     i64.popcnt
     i32.wrap_i64
-    (if
-      (then
+    if
         call $finite_wasm_gas_exhausted
         unreachable
-      )
-    )
+    end
 
     global.set $gas
   )
