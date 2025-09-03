@@ -75,9 +75,14 @@
     global.get $gas
     i64.const 0
     local.get $frame_size
+    i64.const 8
+    ;; $gas | 0 | $frame_size | 8
+    i64.div_u
+    ;; $gas | 0 | $frame_size / 8
+
     global.get $op_cost
     i64.extend_i32_u
-    ;; $gas | 0 | $frame_size | $op_cost
+    ;; $gas | 0 | $frame_size / 8 | $op_cost
 
     i64.mul_wide_u
     i64.popcnt
@@ -86,10 +91,10 @@
         call $finite_wasm_gas_exhausted
         unreachable
     end
-    ;; $gas | 0 | $frame_size * $op_cost
+    ;; $gas | 0 | $frame_size / 8 * $op_cost
 
     i64.const 0
-    ;; $gas | 0 | $frame_size * $op_cost | 0
+    ;; $gas | 0 | $frame_size / 8 * $op_cost | 0
 
     i64.sub128
     i64.popcnt
@@ -98,7 +103,7 @@
         call $finite_wasm_gas_exhausted
         unreachable
     end
-    ;; $gas - $frame_size * $op_cost
+    ;; $gas - $frame_size / 8 * $op_cost
     global.set $gas
 
     local.get $frame_size
@@ -320,25 +325,33 @@
 (invoke "set_op_cost" (i32.const 1))
 (invoke "finite_wasm_stack" (i64.const 1) (i64.const 2))
 (assert_return (invoke "get_stack") (i64.const 7))
-(assert_return (invoke "get_gas") (i64.const 6))
+(assert_return (invoke "get_gas") (i64.const 8))
 
 (invoke "set_gas" (i64.const 10))
 (invoke "set_stack" (i64.const 10))
 (invoke "set_op_cost" (i32.const 2))
 (invoke "finite_wasm_stack" (i64.const 1) (i64.const 2))
 (assert_return (invoke "get_stack") (i64.const 7))
-(assert_return (invoke "get_gas") (i64.const 4))
+(assert_return (invoke "get_gas") (i64.const 8))
 
 (invoke "set_gas" (i64.const 10))
 (invoke "set_stack" (i64.const 10))
 (invoke "set_op_cost" (i32.const 2))
 (invoke "finite_wasm_stack" (i64.const 1) (i64.const 3))
 (assert_return (invoke "get_stack") (i64.const 6))
-(assert_return (invoke "get_gas") (i64.const 1))
+(assert_return (invoke "get_gas") (i64.const 7))
 
 (invoke "set_gas" (i64.const 40))
 (invoke "set_stack" (i64.const 17))
 (invoke "set_op_cost" (i32.const 2))
 (invoke "finite_wasm_stack" (i64.const 1) (i64.const 16))
 (assert_return (invoke "get_stack") (i64.const 0))
-(assert_return (invoke "get_gas") (i64.const 8))
+(assert_return (invoke "get_gas") (i64.const 36))
+
+(invoke "set_gas" (i64.const 99999927518007))
+(invoke "set_stack" (i64.const 262144))
+(invoke "set_op_cost" (i32.const 822756))
+(invoke "finite_wasm_stack" (i64.const 0) (i64.const 64))
+(invoke "finite_wasm_unstack" (i64.const 0) (i64.const 64))
+(assert_return (invoke "get_stack") (i64.const 262144))
+(assert_return (invoke "get_gas") (i64.const 99999920935959))

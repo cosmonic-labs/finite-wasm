@@ -527,6 +527,7 @@ impl<'a> InstrumentContext<'a> {
                 _ => output.section(&section),
             };
         }
+        // TODO: remove once fully implemented
         std::fs::write("/tmp/out.wasm", output.as_slice()).unwrap();
         Ok(output.finish())
     }
@@ -878,15 +879,22 @@ impl<'a> InstrumentContext<'a> {
                 .global_get(GAS_GLOBAL)
                 .i64_const(0)
                 .local_get(1)
+                // $gas | 0 | $frame_size
+                .i64_const(8)
+                // $gas | 0 | $frame_size | 8
+                .i64_div_u()
+                // $gas | 0 | $frame_size / 8
                 .i64_const(self.op_cost.into())
-                // $gas | 0 | $frame_size | $op_cost
+                // $gas | 0 | $frame_size / 8 | $op_cost
                 .checked_mul(GAS_EXHAUSTED_FN)
-                // $gas | 0 | $frame_size * $op_cost
+                // $gas | 0 | $frame_size / 8 * $op_cost
                 .i64_const(0)
-                // $gas | 0 | $frame_size * $op_cost | 0
+                // $gas | 0 | $frame_size / 8 * $op_cost | 0
                 .checked_sub(GAS_EXHAUSTED_FN)
+                // $gas - $frame_size / 8 * $op_cost
                 .global_set(GAS_GLOBAL)
                 .local_get(1)
+                // $frame_size
                 .i64_const(8)
                 // $frame_size | 8
                 .i64_rem_u()
