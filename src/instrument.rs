@@ -195,9 +195,9 @@ impl<'a> Reencode for InstrumentationReencoder {
 trait InstructionSinkExt {
     /// ```wat
     /// i64.add128
-    /// i64.popcnt
-    /// i32.wrap_i64
+    /// i64.eqz
     /// if
+    /// else
     ///     call $f
     ///     unreachable
     /// end
@@ -209,9 +209,9 @@ trait InstructionSinkExt {
     /// local.get $n
     /// i64.const 0
     /// i64.add128
-    /// i64.popcnt
-    /// i32.wrap_i64
+    /// i64.eqz
     /// if
+    /// else
     ///     call $f
     ///     unreachable
     /// end
@@ -220,9 +220,9 @@ trait InstructionSinkExt {
 
     /// ```wat
     /// i64.sub128
-    /// i64.popcnt
-    /// i32.wrap_i64
+    /// i64.eqz
     /// if
+    /// else
     ///     call $f
     ///     unreachable
     /// end
@@ -234,9 +234,9 @@ trait InstructionSinkExt {
     /// local.get $n
     /// i64.const 0
     /// i64.sub128
-    /// i64.popcnt
-    /// i32.wrap_i64
+    /// i64.eqz
     /// if
+    /// else
     ///     call $f
     ///     unreachable
     /// end
@@ -245,9 +245,9 @@ trait InstructionSinkExt {
 
     /// ```wat
     /// i64.mul_wide_u
-    /// i64.popcnt
-    /// i32.wrap_i64
+    /// i64.eqz
     /// if
+    /// else
     ///     call $f
     ///     unreachable
     /// end
@@ -257,9 +257,9 @@ trait InstructionSinkExt {
 impl InstructionSinkExt for &mut we::InstructionSink<'_> {
     fn checked_add(self, f: u32) -> Self {
         self.i64_add128()
-            .i64_popcnt()
-            .i32_wrap_i64()
+            .i64_eqz()
             .if_(we::BlockType::Empty)
+            .else_()
             .call(f)
             .unreachable()
             .end()
@@ -271,9 +271,9 @@ impl InstructionSinkExt for &mut we::InstructionSink<'_> {
 
     fn checked_sub(self, f: u32) -> Self {
         self.i64_sub128()
-            .i64_popcnt()
-            .i32_wrap_i64()
+            .i64_eqz()
             .if_(we::BlockType::Empty)
+            .else_()
             .call(f)
             .unreachable()
             .end()
@@ -285,9 +285,9 @@ impl InstructionSinkExt for &mut we::InstructionSink<'_> {
 
     fn checked_mul(self, f: u32) -> Self {
         self.i64_mul_wide_u()
-            .i64_popcnt()
-            .i32_wrap_i64()
+            .i64_eqz()
             .if_(we::BlockType::Empty)
+            .else_()
             .call(f)
             .unreachable()
             .end()

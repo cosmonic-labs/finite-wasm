@@ -26,9 +26,9 @@
     ;; $gas | 0 | $n | 0
 
     i64.sub128
-    i64.popcnt
-    i32.wrap_i64
+    i64.eqz
     if
+    else
         call $finite_wasm_gas_exhausted
         unreachable
     end
@@ -47,9 +47,9 @@
     ;; $stack | 0 | $operand_size | 0
 
     i64.sub128
-    i64.popcnt
-    i32.wrap_i64
+    i64.eqz
     if
+    else
         call $finite_wasm_stack_exhausted
         unreachable
     end
@@ -61,9 +61,9 @@
     ;; $stack - $operand_size | 0 | $frame_size | 0
 
     i64.sub128
-    i64.popcnt
-    i32.wrap_i64
+    i64.eqz
     if
+    else
         call $finite_wasm_stack_exhausted
         unreachable
     end
@@ -85,9 +85,9 @@
     ;; $gas | 0 | $frame_size / 8 | $op_cost
 
     i64.mul_wide_u
-    i64.popcnt
-    i32.wrap_i64
+    i64.eqz
     if
+    else
         call $finite_wasm_gas_exhausted
         unreachable
     end
@@ -97,9 +97,9 @@
     ;; $gas | 0 | $frame_size / 8 * $op_cost | 0
 
     i64.sub128
-    i64.popcnt
-    i32.wrap_i64
+    i64.eqz
     if
+    else
         call $finite_wasm_gas_exhausted
         unreachable
     end
@@ -121,9 +121,9 @@
         ;; $gas | 0 | $frame_size | 0
 
         i64.sub128
-        i64.popcnt
-        i32.wrap_i64
+        i64.eqz
         if
+        else
             call $finite_wasm_gas_exhausted
             unreachable
         end
@@ -141,9 +141,9 @@
     ;; $stack | 0 | $operand_size | 0
 
     i64.add128
-    i64.popcnt
-    i32.wrap_i64
+    i64.eqz
     if
+    else
         unreachable
     end
     ;; $stack + $operand_size
@@ -154,9 +154,9 @@
     ;; $stack + $operand_size | 0 | $frame_size | 0
 
     i64.add128
-    i64.popcnt
-    i32.wrap_i64
+    i64.eqz
     if
+    else
         unreachable
     end
     ;; $stack + $operand_size + $frame_size
@@ -173,9 +173,9 @@
     ;; $gas | 0 | $count | $linear
 
     i64.mul_wide_u
-    i64.popcnt
-    i32.wrap_i64
+    i64.eqz
     if
+    else
         call $finite_wasm_gas_exhausted
         unreachable
     end
@@ -187,9 +187,9 @@
     ;; $gas | 0 | $count * $linear | 0 | $constant | 0
 
     i64.add128
-    i64.popcnt
-    i32.wrap_i64
+    i64.eqz
     if
+    else
         call $finite_wasm_gas_exhausted
         unreachable
     end
@@ -199,9 +199,9 @@
     ;; $gas | 0 | $count * $linear + $constant | 0
 
     i64.sub128
-    i64.popcnt
-    i32.wrap_i64
+    i64.eqz
     if
+    else
         call $finite_wasm_gas_exhausted
         unreachable
     end
